@@ -30,8 +30,11 @@
             "credentials": "",
             "tunnel": false,
             "network": {
-              "assetEndpoint": true
-            }
+              "assetEndpoint": true,
+              "databaseRedirects": false
+            },
+            "databaseDrivers": null,
+            "databaseKerberos": false
           },
           "size": 3088214,
           "publishedAt": "2026-10-09T05:48:44Z",
@@ -39,6 +42,53 @@
             "type": "oci",
             "ref": "ghcr.io/opskat/extensions/elasticsearch:0.1.0",
             "sha256": "43d3c9a3284895b0cd4d3f01d6f39bc6d05d3114a666392a62eed531ab154274"
+          }
+        }
+      ]
+    },
+    {
+      "name": "oracle",
+      "display": {
+        "en": {
+          "name": "Oracle",
+          "description": "Oracle Database (19c and later) driver for SQL database assets: browse schemas, run SQL, edit tables, import and export"
+        },
+        "zh-CN": {
+          "name": "Oracle",
+          "description": "为「SQL 数据库」资产提供 Oracle Database（19c 及以上）驱动：浏览 schema、执行 SQL、编辑表数据、导入导出"
+        }
+      },
+      "icon": "oracle",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "hostABI": "2.5",
+          "minAppVersion": "1.14.1",
+          "capabilities": {
+            "fs": {
+              "read": null,
+              "write": null
+            },
+            "http": {
+              "allowlist": null
+            },
+            "credentials": "",
+            "tunnel": false,
+            "network": {
+              "assetEndpoint": false,
+              "databaseRedirects": true
+            },
+            "databaseDrivers": [
+              "oracle"
+            ],
+            "databaseKerberos": true
+          },
+          "size": 5840520,
+          "publishedAt": "2026-10-26T01:46:05Z",
+          "source": {
+            "type": "oci",
+            "ref": "ghcr.io/opskat/extensions/oracle:0.1.0",
+            "sha256": "ce16f20d8c93cddde056bdb4ec40b186b8aea75fa4cc3e77230b82bb2a528d8b"
           }
         }
       ]
