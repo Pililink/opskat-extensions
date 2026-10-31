@@ -43,6 +43,35 @@
             "ref": "ghcr.io/opskat/extensions/elasticsearch:0.1.0",
             "sha256": "43d3c9a3284895b0cd4d3f01d6f39bc6d05d3114a666392a62eed531ab154274"
           }
+        },
+        {
+          "version": "0.2.0",
+          "hostABI": "1.0",
+          "minAppVersion": "1.15.0",
+          "permissions": {
+            "fs": {
+              "read": null,
+              "write": null
+            },
+            "credentials": "",
+            "kerberos": false,
+            "network": {
+              "http": null,
+              "allowPrivate": false,
+              "assetEndpoint": true,
+              "assetRoute": false
+            }
+          },
+          "contributes": {
+            "databaseDrivers": null
+          },
+          "size": 3096318,
+          "publishedAt": "2026-10-31T03:23:53Z",
+          "source": {
+            "type": "oci",
+            "ref": "ghcr.io/opskat/extensions/elasticsearch:0.2.0",
+            "sha256": "38ad7cd4e185f2f4b8287bdb8951f88ea02fa75859fbe55f08e75aa51f26673a"
+          }
         }
       ]
     },
@@ -89,6 +118,37 @@
             "type": "oci",
             "ref": "ghcr.io/opskat/extensions/oracle:0.1.0",
             "sha256": "ce16f20d8c93cddde056bdb4ec40b186b8aea75fa4cc3e77230b82bb2a528d8b"
+          }
+        },
+        {
+          "version": "0.2.0",
+          "hostABI": "1.0",
+          "minAppVersion": "1.15.0",
+          "permissions": {
+            "fs": {
+              "read": null,
+              "write": null
+            },
+            "credentials": "",
+            "kerberos": true,
+            "network": {
+              "http": null,
+              "allowPrivate": false,
+              "assetEndpoint": true,
+              "assetRoute": true
+            }
+          },
+          "contributes": {
+            "databaseDrivers": [
+              "oracle"
+            ]
+          },
+          "size": 5870956,
+          "publishedAt": "2026-10-31T03:24:06Z",
+          "source": {
+            "type": "oci",
+            "ref": "ghcr.io/opskat/extensions/oracle:0.2.0",
+            "sha256": "3278d3cf2d46c1425e8cc7e27f8490c4c6456f9bfa3242ec9e84e69fd57be1e7"
           }
         }
       ]
