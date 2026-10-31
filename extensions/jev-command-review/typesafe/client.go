@@ -116,7 +116,8 @@ func WithBaseURL(u string) Option { return func(c *Client) { c.baseURL = u } }
 // WithHTTPClient 替换底层 http.Client。
 func WithHTTPClient(hc *http.Client) Option { return func(c *Client) { c.httpClient = hc } }
 
-// New 创建客户端。超时由调用方通过 ctx 控制。
+// New 创建客户端。超时由调用方通过 ctx 控制。apiKey 为空时不写 Authorization：密钥由宿主按设置的
+// auth 注入到发往服务地址的请求里（命令审核扩展里就是这样用的）。
 func New(apiKey string, opts ...Option) *Client {
 	c := &Client{
 		apiKey:     apiKey,
@@ -159,7 +160,9 @@ func (c *Client) post(ctx context.Context, body []byte) (*Response, error) {
 	if err != nil {
 		return nil, fmt.Errorf("typesafe: build request: %w", err)
 	}
-	httpReq.Header.Set("Authorization", "Bearer "+c.apiKey)
+	if c.apiKey != "" {
+		httpReq.Header.Set("Authorization", "Bearer "+c.apiKey)
+	}
 	httpReq.Header.Set("Content-Type", "application/json")
 
 	httpResp, err := c.httpClient.Do(httpReq)

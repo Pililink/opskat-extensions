@@ -115,3 +115,20 @@ func TestEvaluateRejectsAnswerMissingFromResponse(t *testing.T) {
 	_, err := c.Evaluate(context.Background(), Request{Model: "m", State: "x", Questions: map[string]Question{"q": {Type: QuestionNoul, Instructions: "?"}}})
 	assert.ErrorContains(t, err, `missing answer "q"`)
 }
+
+// 不带 API key 时不写 Authorization，留给宿主按设置的 auth 注入。
+func TestEvaluateWithoutAPIKeySendsNoAuthorization(t *testing.T) {
+	var auth []string
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		auth = r.Header.Values("Authorization")
+		_, _ = w.Write([]byte(`{"model":"m","answers":{"q":{"type":"noul","noul":0.1}}}`))
+	}))
+	t.Cleanup(srv.Close)
+
+	_, err := New("", WithBaseURL(srv.URL)).Evaluate(context.Background(), Request{
+		Model:     "m",
+		Questions: map[string]Question{"q": {Type: QuestionNoul, Instructions: "?"}},
+	})
+	require.NoError(t, err)
+	assert.Empty(t, auth)
+}
