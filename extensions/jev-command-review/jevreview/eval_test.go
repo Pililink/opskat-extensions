@@ -68,7 +68,7 @@ func TestEvalSamplesAreWellFormedAndCoverAssetTypes(t *testing.T) {
 
 // TestEvalAgainstJev 用真实的 Jev 审核全部样本并输出指标。需要 API key，平时跳过：
 //
-//	OPSKAT_TYPESAFE_EVAL_KEY=<key> go test ./internal/pkg/jevreview/ -run TestEvalAgainstJev -v -count=1
+//	OPSKAT_TYPESAFE_EVAL_KEY=<key> go test ./jevreview/ -run TestEvalAgainstJev -v -count=1
 //
 // 可选：OPSKAT_TYPESAFE_EVAL_BASE_URL（默认 DefaultBaseURL）、OPSKAT_TYPESAFE_EVAL_MODEL（默认 DefaultModel）、OPSKAT_TYPESAFE_EVAL_THRESHOLD（默认 DefaultThreshold）。
 func TestEvalAgainstJev(t *testing.T) {
