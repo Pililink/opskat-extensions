@@ -6,6 +6,7 @@ import (
 	"crypto/ed25519"
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -14,7 +15,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/opskat/opskat/pkg/extension"
+	"github.com/opskat/opskat/pkg/extmanifest"
 	"github.com/opskat/opskat/pkg/extstore"
 )
 
@@ -61,9 +62,9 @@ func TestPublishNewVersion(t *testing.T) {
 	sum := sha256.Sum256(pkg)
 	want := extstore.Version{
 		Version:       "0.2.0",
-		HostABI:       "2.2",
-		MinAppVersion: "1.14.1",
-		Capabilities:  extension.Capabilities{HTTP: extension.HTTPCapability{Allowlist: []string{"https://example.com/"}}},
+		HostABI:       "1.0",
+		MinAppVersion: "1.15.0",
+		Permissions:   extmanifest.Permissions{Network: extmanifest.NetworkPermission{HTTP: []string{"https://example.com/"}}},
 		Size:          int64(len(pkg)),
 		PublishedAt:   testClock,
 		Source:        extstore.Source{Type: extstore.SourceOCI, Ref: ref, SHA256: hex.EncodeToString(sum[:])},
@@ -133,6 +134,44 @@ func TestPublishAppendsAndKeepsEarlierVersions(t *testing.T) {
 	}
 	if !reflect.DeepEqual(versions[0], before.Extensions[0].Versions[0]) {
 		t.Errorf("published 0.2.0 entry changed:\n%+v\nwas %+v", versions[0], before.Extensions[0].Versions[0])
+	}
+}
+
+// A version index.json already publishes stays exactly as published, fields this
+// build no longer models included: an entry written for an older app (a 2.x
+// extension's "capabilities") is what that app still reads and installs by.
+func TestPublishKeepsPublishedEntriesAsPublished(t *testing.T) {
+	ctx := context.Background()
+	pub, priv := newKey(t)
+	root := newRepo(t, map[string]string{"sample": "0.2.0"})
+	const old = `{"version":"0.1.0","hostABI":"2.2","capabilities":{"network":{"assetEndpoint":true}},` +
+		`"size":7,"publishedAt":"2026-10-09T05:48:44Z","source":{"type":"oci","ref":"r:0.1.0","sha256":"00"}}`
+	index := `{"format":1,"extensions":[{"name":"sample","display":{},"icon":"","versions":[` + old + `]}]}`
+	if err := os.WriteFile(filepath.Join(root, indexFile), []byte(index), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	if _, err := newPublisher(root, priv, &fakeBuilder{}, &fakePusher{}, testClock).publish(ctx); err != nil {
+		t.Fatal(err)
+	}
+	_, raw, _ := readSignedIndex(t, root, pub)
+	var got struct {
+		Extensions []struct {
+			Versions []json.RawMessage `json:"versions"`
+		} `json:"extensions"`
+	}
+	if err := json.Unmarshal(raw, &got); err != nil {
+		t.Fatal(err)
+	}
+	if len(got.Extensions) != 1 || len(got.Extensions[0].Versions) != 2 {
+		t.Fatalf("index = %s", raw)
+	}
+	var kept bytes.Buffer
+	if err := json.Compact(&kept, got.Extensions[0].Versions[0]); err != nil {
+		t.Fatal(err)
+	}
+	if kept.String() != old {
+		t.Fatalf("published 0.1.0 entry rewritten:\n%s\nwas %s", kept.String(), old)
 	}
 }
 
