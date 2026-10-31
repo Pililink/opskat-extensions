@@ -17,13 +17,13 @@ func writeIndex(t *testing.T, root string, published map[string][]string) {
 	for name, versions := range published {
 		ext := extstore.Extension{Name: name}
 		for _, v := range versions {
-			ext.Versions = append(ext.Versions, extstore.Version{Version: v, HostABI: "2.2",
+			ext.Versions = append(ext.Versions, extstore.Version{Version: v, HostABI: "1.0",
 				PublishedAt: time.Unix(0, 0).UTC(),
 				Source:      extstore.Source{Type: extstore.SourceOCI, Ref: "ref", SHA256: "00"}})
 		}
 		idx.Extensions = append(idx.Extensions, ext)
 	}
-	raw, err := encodeIndex(idx)
+	raw, err := encodeIndex(idx, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
